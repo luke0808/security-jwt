@@ -48,7 +48,6 @@ public class SercurityConfig {
         @Override
         public void configure(HttpSecurity httpSecurity) throws Exception {
             AuthenticationManager authenticationManager = httpSecurity.getSharedObject(AuthenticationManager.class);
-
             httpSecurity.addFilter(new JwtAuthenticationFilter(authenticationManager));
             httpSecurity.addFilter(new JwtAuthorizationFilter(authenticationManager,userRepository));
         }

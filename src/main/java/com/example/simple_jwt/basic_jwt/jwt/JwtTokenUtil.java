@@ -21,8 +21,6 @@ public class JwtTokenUtil {
         playloads.put("username",customUserDetail.getUsername());
         playloads.put("password",customUserDetail.getPassword());
 
-        System.out.println(new Date(System.currentTimeMillis()  +  JwtProperties.JWT_TOKEN_VALIDITY ));
-
         return Jwts.builder()
                 .setHeader(headers)
                 .setClaims(playloads)

@@ -5,7 +5,6 @@ import com.example.simple_jwt.basic_jwt.entity.Users;
 import com.example.simple_jwt.basic_jwt.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,7 +15,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Date;
 
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
@@ -42,21 +40,21 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         try {
             String token = request.getHeader(JwtProperties.JWT_HEADER).replace(JwtProperties.JWT_PREFIX, "");
 
-            Claims claims = Jwts.parser().setSigningKey(JwtProperties.JWT_SECRET).parseClaimsJws(token).getBody();
+            Claims playloads = Jwts.parser().setSigningKey(JwtProperties.JWT_SECRET).parseClaimsJws(token).getBody();
 
-            String username = (String) claims.get("username");
+            String username = (String) playloads.get("username");
 
             if (username != null) {
 
                 Users user = userRepository.findByUsername(username);
 
-                CustomUserDetail principalDetails = new CustomUserDetail(user);
+                CustomUserDetail customUserDetail = new CustomUserDetail(user);
 
                 SecurityContextHolder.getContext().setAuthentication(
                         new UsernamePasswordAuthenticationToken(
-                                principalDetails,
-                                principalDetails.getPassword(),
-                                principalDetails.getAuthorities())
+                                customUserDetail,
+                                customUserDetail.getPassword(),
+                                customUserDetail.getAuthorities())
                 );
             }
         } catch (Exception e){

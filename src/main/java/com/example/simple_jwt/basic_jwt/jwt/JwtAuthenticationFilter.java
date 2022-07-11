@@ -5,7 +5,6 @@ import com.example.simple_jwt.basic_jwt.auth.CustomUserDetail;
 import com.example.simple_jwt.basic_jwt.dto.UserDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -32,13 +31,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             e.printStackTrace();
         }
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userDto.getUsername(),userDto.getPassword());
-        return authenticationManager.authenticate(token); //세션 영역에 저장됨.
+        return authenticationManager.authenticate(token);
     }
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult)
             throws IOException, ServletException {
-        System.out.println("인증 성공");
         String jwtToken = JwtTokenUtil.createJwtToken((CustomUserDetail) authResult.getPrincipal());
         response.addHeader(JwtProperties.JWT_HEADER,JwtProperties.JWT_PREFIX+jwtToken);
     }

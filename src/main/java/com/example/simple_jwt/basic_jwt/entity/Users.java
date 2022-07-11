@@ -28,7 +28,6 @@ public class Users {
         users.username = userDto.getUsername();
         users.password = new BCryptPasswordEncoder().encode(userDto.getPassword());
         users.roles = RoleEnum.USER;
-        System.out.println("users = " + users);
         return users;
     }
 }
