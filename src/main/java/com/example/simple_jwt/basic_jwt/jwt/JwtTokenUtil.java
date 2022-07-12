@@ -19,7 +19,6 @@ public class JwtTokenUtil {
 
         Map<String, Object> playloads = new HashMap<>();
         playloads.put("username",customUserDetail.getUsername());
-        playloads.put("password",customUserDetail.getPassword());
 
         return Jwts.builder()
                 .setHeader(headers)
