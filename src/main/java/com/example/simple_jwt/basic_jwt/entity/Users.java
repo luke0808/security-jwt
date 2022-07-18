@@ -16,7 +16,7 @@ public class Users {
     @GeneratedValue
     private Long id;
 
-    private String username;
+    private String email;
 
     private String password;
 
@@ -25,7 +25,7 @@ public class Users {
 
     public static Users createUsers(UserDto userDto) {
         Users users = new Users();
-        users.username = userDto.getUsername();
+        users.email = userDto.getEmail();
         users.password = new BCryptPasswordEncoder().encode(userDto.getPassword());
         users.roles = RoleEnum.USER;
         return users;

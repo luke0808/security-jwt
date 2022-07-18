@@ -7,8 +7,8 @@ import javax.validation.constraints.NotBlank;
 @Getter
 public class UserDto {
 
-    @NotBlank(message = "USERNAME을 입력하세요")
-    private String username;
+    @NotBlank(message = "email을 입력하세요")
+    private String email;
     private String password;
 
 }

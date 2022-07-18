@@ -1,8 +1,10 @@
 package com.example.simple_jwt.basic_jwt.jwt;
 
-import com.auth0.jwt.JWT;
-import com.example.simple_jwt.basic_jwt.auth.CustomUserDetail;
 import com.example.simple_jwt.basic_jwt.dto.UserDto;
+import com.example.simple_jwt.basic_jwt.entity.RefreshToken;
+import com.example.simple_jwt.basic_jwt.entity.Users;
+import com.example.simple_jwt.basic_jwt.repository.RefreshTokenRepository;
+import com.example.simple_jwt.basic_jwt.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,6 +23,8 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -30,14 +34,49 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         } catch (IOException e) {
             e.printStackTrace();
         }
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userDto.getUsername(),userDto.getPassword());
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userDto.getEmail(),userDto.getPassword());
         return authenticationManager.authenticate(token);
     }
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult)
             throws IOException, ServletException {
-        String jwtToken = JwtTokenUtil.createJwtToken((CustomUserDetail) authResult.getPrincipal());
-        response.addHeader(JwtProperties.JWT_HEADER,JwtProperties.JWT_PREFIX+jwtToken);
+
+        String accessToken = JwtTokenUtil.createJwtToken(authResult.getName(),JwtProperties.JWT_ACCESS_TOKEN_VALIDITY,JwtProperties.JWT_ACCESS_SECRET);
+        String refreshToken = JwtTokenUtil.createJwtToken(authResult.getName(),JwtProperties.JWT_REFRESH_TOKEN_VALIDITY,JwtProperties.JWT_REFRESH_SECRET);
+
+        Users users = userRepository.findByEmail(authResult.getName());
+
+        RefreshToken refreshTokenEntity = refreshTokenRepository.findRefreshTokenById(users.getId());
+
+        if (refreshTokenEntity == null){
+            System.out.println("첫 생성!");
+            saveRefreshToken(users, refreshToken);
+        }else {
+            System.out.println("여긴 널이 아니야!!");
+            System.out.println("생성 후 체크!");
+            boolean jwtValid = JwtTokenUtil.validateTokenExceptExpiration(JwtProperties.JWT_REFRESH_SECRET,refreshTokenEntity.getToken());
+            if (jwtValid){
+                System.out.println("만료");
+                saveRefreshToken(users, refreshToken);
+            }else {
+                System.out.println("만료 아니면");
+                refreshToken = refreshTokenEntity.getToken();
+            }
+        }
+
+        System.out.println("accessToken = " + accessToken);
+        System.out.println("refreshToken = " + refreshToken);
+
+        response.addHeader("accessToken",JwtProperties.JWT_PREFIX+accessToken);
+        response.addHeader("refreshToken",JwtProperties.JWT_PREFIX+refreshToken);
     }
+
+    private void saveRefreshToken(Users users, String refreshToken) {
+        refreshTokenRepository.save(RefreshToken.builder()
+                .id(users.getId())
+                .token(refreshToken)
+                .build());
+    }
+
 }

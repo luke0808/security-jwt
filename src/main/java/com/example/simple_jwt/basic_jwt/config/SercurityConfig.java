@@ -2,6 +2,7 @@ package com.example.simple_jwt.basic_jwt.config;
 
 import com.example.simple_jwt.basic_jwt.jwt.JwtAuthenticationFilter;
 import com.example.simple_jwt.basic_jwt.jwt.JwtAuthorizationFilter;
+import com.example.simple_jwt.basic_jwt.repository.RefreshTokenRepository;
 import com.example.simple_jwt.basic_jwt.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -12,12 +13,14 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SercurityConfig {
 
     private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Bean
     public static BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -48,8 +51,8 @@ public class SercurityConfig {
         @Override
         public void configure(HttpSecurity httpSecurity) throws Exception {
             AuthenticationManager authenticationManager = httpSecurity.getSharedObject(AuthenticationManager.class);
-            httpSecurity.addFilter(new JwtAuthenticationFilter(authenticationManager));
-            httpSecurity.addFilter(new JwtAuthorizationFilter(authenticationManager,userRepository));
+            httpSecurity.addFilter(new JwtAuthenticationFilter(authenticationManager,userRepository,refreshTokenRepository));
+            httpSecurity.addFilter(new JwtAuthorizationFilter(authenticationManager,userRepository,refreshTokenRepository));
         }
     }
 

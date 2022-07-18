@@ -13,6 +13,7 @@ public class CustomUserDetail implements UserDetails {
     private Users users;
 
     public CustomUserDetail(Users user) {
+        System.out.println("user = " + user);
         this.users = user;
     }
 
@@ -29,7 +30,7 @@ public class CustomUserDetail implements UserDetails {
 
     @Override
     public String getUsername() {
-        return users.getUsername();
+        return users.getEmail();
     }
 
     @Override
