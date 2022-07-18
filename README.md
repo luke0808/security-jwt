@@ -8,7 +8,7 @@ framework : spring boot frameWork (version 2.7.1')
 ide       : intellij 
 java      : 8
 buildtool : gradle
-db       : h2 database
+db        : h2 database
 ```
 
 개발 과정은 블로그를 참조해주세요 
