@@ -13,7 +13,6 @@ public class CustomUserDetail implements UserDetails {
     private Users users;
 
     public CustomUserDetail(Users user) {
-        System.out.println("user = " + user);
         this.users = user;
     }
 

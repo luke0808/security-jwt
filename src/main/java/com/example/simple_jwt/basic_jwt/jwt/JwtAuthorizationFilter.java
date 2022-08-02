@@ -1,7 +1,6 @@
 package com.example.simple_jwt.basic_jwt.jwt;
 
 import com.example.simple_jwt.basic_jwt.auth.CustomUserDetail;
-import com.example.simple_jwt.basic_jwt.entity.RefreshToken;
 import com.example.simple_jwt.basic_jwt.entity.Users;
 import com.example.simple_jwt.basic_jwt.repository.RefreshTokenRepository;
 import com.example.simple_jwt.basic_jwt.repository.UserRepository;

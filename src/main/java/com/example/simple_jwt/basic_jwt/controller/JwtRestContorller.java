@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
+import javax.validation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,7 +17,7 @@ public class JwtRestContorller {
 
     private final UserService userService;
 
-    @PostMapping("/join")
+    @PostMapping("/signup")
     public ResponseEntity<String> save(@RequestBody @Valid UserDto userDto) {
         userService.save(userDto);
         return ResponseEntity.ok("회원가입 완료");
@@ -30,7 +30,7 @@ public class JwtRestContorller {
     }
 
     @GetMapping("/admin/join")
-    public ResponseEntity<String> securityAdminJoin() {
+    public ResponseEntity<String> securityAdminjoin() {
         return ResponseEntity.ok("ADMIN 인증 완료");
     }
 

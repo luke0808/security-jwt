@@ -14,7 +14,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -39,9 +38,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult)
-            throws IOException, ServletException {
-
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) {
         String accessToken = JwtTokenUtil.createJwtToken(authResult.getName(),JwtProperties.JWT_ACCESS_TOKEN_VALIDITY,JwtProperties.JWT_ACCESS_SECRET);
         String refreshToken = JwtTokenUtil.createJwtToken(authResult.getName(),JwtProperties.JWT_REFRESH_TOKEN_VALIDITY,JwtProperties.JWT_REFRESH_SECRET);
 
@@ -50,17 +47,17 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         RefreshToken refreshTokenEntity = refreshTokenRepository.findRefreshTokenById(users.getId());
 
         if (refreshTokenEntity == null){
-            System.out.println("첫 생성!");
+            System.out.println("토큰이 없어 첫 생성!");
             saveRefreshToken(users, refreshToken);
         }else {
-            System.out.println("여긴 널이 아니야!!");
-            System.out.println("생성 후 체크!");
+            System.out.println("토큰이 있네");
+            System.out.println("생성 후 만료 체크!");
             boolean jwtValid = JwtTokenUtil.validateTokenExceptExpiration(JwtProperties.JWT_REFRESH_SECRET,refreshTokenEntity.getToken());
             if (jwtValid){
-                System.out.println("만료");
+                System.out.println("만료됐네?");
                 saveRefreshToken(users, refreshToken);
             }else {
-                System.out.println("만료 아니면");
+                System.out.println("만료가 아니야");
                 refreshToken = refreshTokenEntity.getToken();
             }
         }
